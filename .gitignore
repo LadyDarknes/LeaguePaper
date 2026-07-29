@@ -1,4 +1,23 @@
-/*
-!.gitignore
-!/src
-!/src/**
+# Build directory
+build/
+bin/
+out/
+
+# IDE & Editor files
+.vscode/
+.vs/
+.idea/
+*.sln
+*.vcxproj*
+
+# Generated / Cache files
+cache/
+web/bg.jpg
+compile_commands.json
+
+# Binaries & Objects
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk

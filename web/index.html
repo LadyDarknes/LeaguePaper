@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeaguePaper - Live Wallpaper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <img id="bg" src="bg.jpg?v=0" alt="Background">
+    <canvas id="snowCanvas"></canvas>
+
+    <script>
+        // Auto-refresh background image cache bust if changed
+        let lastVersion = 0;
+        setInterval(() => {
+            const bg = document.getElementById('bg');
+            bg.src = "bg.jpg?t=" + new Date().getTime();
+        }, 2000);
+
+        // Snow Canvas Animation
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const maxParticles = 90;
+        const particles = [];
+
+        for (let i = 0; i < maxParticles; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 3 + 1,
+                d: Math.random() * maxParticles,
+                opacity: Math.random() * 0.7 + 0.3,
+                speedY: Math.random() * 1.2 + 0.5,
+                speedX: Math.random() * 0.6 - 0.3
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.beginPath();
+            
+            for (let i = 0; i < maxParticles; i++) {
+                const p = particles[i];
+                ctx.moveTo(p.x, p.y);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        let angle = 0;
+        function update() {
+            angle += 0.01;
+            for (let i = 0; i < maxParticles; i++) {
+                const p = particles[i];
+                p.y += p.speedY;
+                p.x += Math.sin(angle + p.d) * 0.5 + p.speedX;
+
+                if (p.y > canvas.height) {
+                    particles[i] = {
+                        x: Math.random() * canvas.width,
+                        y: -10,
+                        r: p.r,
+                        d: p.d,
+                        opacity: p.opacity,
+                        speedY: p.speedY,
+                        speedX: p.speedX
+                    };
+                }
+            }
+        }
+
+        draw();
+    </script>
+</body>
+</html>

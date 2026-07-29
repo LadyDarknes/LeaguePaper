@@ -23,14 +23,12 @@ std::string ReadRegistryString(HKEY hKeyParent, const std::string& subKey, const
 
 std::string FindWallpaperEnginePath() {
     std::string regPath = ReadRegistryString(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 431960", "InstallLocation");
-
     if (!regPath.empty()) {
         std::string exePath = regPath + "\\wallpaper64.exe";
         if (fs::exists(exePath)) return exePath;
     }
 
     regPath = ReadRegistryString(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 431960", "InstallLocation");
-
     if (!regPath.empty()) {
         std::string exePath = regPath + "\\wallpaper64.exe";
         if (fs::exists(exePath)) return exePath;
@@ -263,19 +261,15 @@ bool FetchAndApplySplashArt(int champId, int skinId, const std::string& destPath
 
     int skinIndex = skinId > 0 ? (skinId % 1000) : 0;
 
-    // 1. Try Data Dragon Skin Splash
     std::string ddragonUrl = "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + alias + "_" + std::to_string(skinIndex) + ".jpg";
-    std::cout << "[WALLPAPER] Trying Data Dragon splash: " << ddragonUrl << std::endl;
     if (DownloadFile(ddragonUrl, destPath)) {
         if (fs::exists(destPath) && fs::file_size(destPath) > 5000) {
             return true;
         }
     }
 
-    // 2. Try Data Dragon Base Splash (fallback)
     if (skinIndex != 0) {
         std::string ddragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + alias + "_0.jpg";
-        std::cout << "[WALLPAPER] Skin splash failed, trying Base splash: " << ddragonBaseUrl << std::endl;
         if (DownloadFile(ddragonBaseUrl, destPath)) {
             if (fs::exists(destPath) && fs::file_size(destPath) > 5000) {
                 return true;
